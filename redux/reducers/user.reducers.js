@@ -1,14 +1,15 @@
 import { userTypes } from "../types";
-import {getCookie, setCookie, removeCookie} from 'utils/cookie';
-
+import {getCookie, setCookie} from 'utils/cookie';
+import _ from 'underscore';
 let initialState;
 if (typeof localStorage !== "undefined") {
    const token = getCookie('token');
    const user = getCookie('user');
-   console.log(user);
+   const permissions = getCookie('permissions');
    if (token) {
        initialState = {
         isLoggedIn: true,
+        permissions : permissions,
         user : user ? JSON.parse(decodeURIComponent(user)) : {}
        }//JSON.parse(decodeURIComponent(authCookie));
    } else {
@@ -32,6 +33,14 @@ if (typeof localStorage !== "undefined") {
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
+    case userTypes.INIT_STORE : {
+      return {
+        ...state,
+        permissions : action.data.permissions ? JSON.parse(action.data.permissions) : [],
+        user: action.data.user,
+        isLoggedIn : action.data.token ? true : false
+      }
+    };
     case userTypes.GETME:
       return {
         ...state,
@@ -51,12 +60,15 @@ const userReducer = (state = initialState, action) => {
       };
     case userTypes.LOGIN_SUCCESS:
       setCookie("token", action.user.access_token);
+      setCookie("permissions",JSON.stringify(_.pluck(action.user.permissions,'authority')));
+      setCookie("user",{name : action.user.name , username: action.user.username})
       return {
         ...state,
         loginLoading: false,
         isLoggedIn: true,
         error: undefined,
-        user: action.user
+        user: {name : action.user.name , username: action.user.username},
+        permissions : _.pluck(action.user.permissions,'authority')
       };
     case userTypes.LOGOUT:
       return {

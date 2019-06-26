@@ -1,8 +1,9 @@
-import { login, logout, signup, getme } from './user.actions'
+import { login, logout, signup, getme, whoAmI } from './user.actions'
 
 export {
   login,
   logout,
   signup,
-  getme
+  getme,
+  whoAmI
 }

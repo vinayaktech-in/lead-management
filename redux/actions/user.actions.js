@@ -14,6 +14,14 @@ export const getme = () => {
   };
 };
 
+export const whoAmI = (token,user,permissions) => {
+  return dispatch => {
+    dispatch({
+      type : userTypes.INIT_STORE, 
+      data : {user:user, token:token, permissions:permissions}
+    })
+  }
+}
 export const login = (credentials) => {
   return dispatch => {
     dispatch({

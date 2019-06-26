@@ -1,4 +1,5 @@
 import Document, { Head, Main, NextScript } from 'next/document'
+require('../assets/antd-custom.less');
 
 export default class MyDocument extends Document {
   static async getInitialProps (ctx) {

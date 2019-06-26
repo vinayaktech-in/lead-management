@@ -1,16 +1,16 @@
 import React from "react";
 import App, { Container } from "next/app";
 import { Provider } from "react-redux";
-import withRedux from "next-redux-wrapper";
-import { initStore } from "redux/store";
+import withReduxStore from "redux/with-redux-store";
 import { appWithTranslation } from '../i18n';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import {Spin} from 'antd';
+import {whoAmI} from 'actions';
+import nextCookie from 'next-cookies';
 // import NextNProgress from '../utils/NextNProgress';
 Router.events.on('routeChangeStart', url => {
-    console.log(`Loading: ${url}`)
     NProgress.start()
 });
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -19,6 +19,17 @@ class MyApp extends App {
     state = { loading: true };
  
    static async getInitialProps({ Component, ctx }) {
+    const { store, req } = ctx;
+    const isServer = !!req;
+   
+    if (isServer) {
+        // happens on page first load
+        const {user,token,permissions} = nextCookie(ctx);
+        if (token) {
+          await store.dispatch(whoAmI(token,user,permissions));
+        }
+      }
+    
        const pageProps = Component.getInitialProps
            ? await Component.getInitialProps(ctx)
            : {};
@@ -43,4 +54,4 @@ class MyApp extends App {
 }
 
 
-export default withRedux(initStore)(appWithTranslation(MyApp));
+export default withReduxStore(appWithTranslation(MyApp));

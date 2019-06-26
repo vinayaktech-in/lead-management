@@ -7,7 +7,7 @@ import logger from 'redux-logger'
 
 
 
-export const initStore = (initialState = {}) => {
+export default (initialState = {}) => {
    return createStore(
        reducers,
        initialState,
