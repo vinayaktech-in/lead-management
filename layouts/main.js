@@ -1,7 +1,8 @@
 import { enquireScreen } from 'enquire-js';
 import HeaderComponent from '../components/header';
 import SidebarComponent from '../components/sidebar';
-
+import {connect} from 'react-redux';
+import {detectDevice} from 'actions'
 // import stylesheet from 'antd/dist/antd.min.css'
 
 import { Layout } from 'antd';
@@ -12,7 +13,7 @@ enquireScreen(b => {
   isMobile = b;
 });
 let contentPadding = 210;
-export default class Main extends React.Component {
+class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,10 +24,13 @@ export default class Main extends React.Component {
     enquireScreen(b => {
       this.setState({
         isMobile: !!b,
+      },()=>{
+        this.props.detectDevice(this.state.isMobile);
+        contentPadding = this.state.isMobile ? 10 : 210;
       });
     });
     // console.log(this.state.isMobile);
-    contentPadding = this.state.isMobile ? 10 : 210;
+    
   }
   render() {
     const { children, permissions} = this.props;
@@ -45,3 +49,16 @@ export default class Main extends React.Component {
     </Layout>
   }
 }
+function mapStateToProps(state) {
+  return {
+      isMobile: state.session.isMobile
+  };
+}
+function mapDispatchToProps(dispatch) {
+    return {
+        detectDevice : (isMobile) => {
+            dispatch(detectDevice(isMobile));
+        }
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Main)

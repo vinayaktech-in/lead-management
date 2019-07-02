@@ -16,26 +16,24 @@ Router.events.on('routeChangeStart', url => {
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 class MyApp extends App {
-    state = { loading: true };
- 
    static async getInitialProps({ Component, ctx }) {
     const { store, req } = ctx;
     const isServer = !!req;
-   
-    if (isServer) {
+    
+    if (isServer) { 
         // happens on page first load
         const {user,token,permissions} = nextCookie(ctx);
         if (token) {
           await store.dispatch(whoAmI(token,user,permissions));
         }
       }
-    
+      console.log(Component);
        const pageProps = Component.getInitialProps
            ? await Component.getInitialProps(ctx)
            : {};
             return { pageProps };
    }
-
+   state = { loading: true };
    componentDidMount(){
         this.setState({ loading: false });
    }

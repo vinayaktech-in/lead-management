@@ -1,16 +1,20 @@
 import { userTypes } from "../types";
 import {getCookie, setCookie} from 'utils/cookie';
 import _ from 'underscore';
+import {setAuthHeader} from 'config/api'
 let initialState;
 if (typeof localStorage !== "undefined") {
    const token = getCookie('token');
    const user = getCookie('user');
    const permissions = getCookie('permissions');
+   setAuthHeader(token);
    if (token) {
        initialState = {
         isLoggedIn: true,
         permissions : permissions,
-        user : user ? JSON.parse(decodeURIComponent(user)) : {}
+        user : user ? JSON.parse(decodeURIComponent(user)) : {},
+        successors : [],
+        isMobile : false
        }//JSON.parse(decodeURIComponent(authCookie));
    } else {
        initialState = {
@@ -18,7 +22,9 @@ if (typeof localStorage !== "undefined") {
            user: undefined,
            loginLoading: false,
            signupLoading: false,
-           error:undefined
+           error:undefined,
+           successors : [],
+           isMobile : false
        }
    }
 } else {
@@ -27,7 +33,9 @@ if (typeof localStorage !== "undefined") {
        user: undefined,
        loginLoading: false,
        signupLoading: false,
-       error: undefined
+       error: undefined,
+       successors : [],
+       isMobile : false
    };
 }
 
@@ -39,6 +47,12 @@ const userReducer = (state = initialState, action) => {
         permissions : action.data.permissions ? JSON.parse(action.data.permissions) : [],
         user: action.data.user,
         isLoggedIn : action.data.token ? true : false
+      }
+    };
+    case userTypes.DETECT_DEVICE : {
+      return {
+        ...state,
+        isMobile : action.isMobile
       }
     };
     case userTypes.GETME:
@@ -62,6 +76,7 @@ const userReducer = (state = initialState, action) => {
       setCookie("token", action.user.access_token);
       setCookie("permissions",JSON.stringify(_.pluck(action.user.permissions,'authority')));
       setCookie("user",{name : action.user.name , username: action.user.username})
+      setAuthHeader(action.user.access_token);
       return {
         ...state,
         loginLoading: false,
@@ -95,6 +110,11 @@ const userReducer = (state = initialState, action) => {
         error: undefined,
         user: action.user
       };
+    case userTypes.SUCCESSORS_SUCCESS: 
+      return {
+        ...state, 
+        successors : action.successors
+      }
     default:
       return state;
   }

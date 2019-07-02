@@ -69,7 +69,7 @@ class SidebarComponent extends Component {
       const menus = [{
          menu :  {name: t('user'),icon:"user",permissions:['ADD_USER']},
          submenus : [
-          {name: t('system-user'),icon:"user",link:"/system-users",permissions:['ADD_USER']},
+          {name: t('system-user'),icon:"user",link:"/",permissions:['ADD_USER']},
           {name: t('end-user'),icon:"user",link:"/end-users",permissions:[]}, 
          ]
       }, {

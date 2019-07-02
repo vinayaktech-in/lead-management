@@ -25,6 +25,7 @@ export default App => {
     };
 
     static async getInitialProps(appContext) {
+      console.log('called');
       // Get or Create the store with `undefined` as initialState
       // This allows you to set a custom default initialState
       const store = getOrCreateStore();
@@ -34,7 +35,7 @@ export default App => {
 
       let appProps = {};
       if (typeof App.getInitialProps === 'function') {
-        appProps = await App.getInitialProps.call(App, appContext);
+        appProps = await App.getInitialProps(appContext);
       }
 
       return {
@@ -45,6 +46,7 @@ export default App => {
 
     constructor(props) {
       super(props);
+      console.log(App.getInitialProps);
       this.store = getOrCreateStore(props.initialReduxState);
     }
 
